@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OMPAY - اححصل على قرضك بسرعة</title>
+
+    <!-- ✅ Telegram SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --ompay-primary: #004b87;
+            --ompay-hover: #003366;
+            --ompay-blue-light: #0077b6;
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --calc-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --slider-track: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Top Header Navigation bar */
+        .app-header {
+            width: 100%;
+            background-color: var(--ompay-primary);
+            height: 60px;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 3px solid var(--ompay-blue-light);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+        }
+
+        .header-title .om { color: #90e0ef; margin-left: 4px; }
+        .header-title .pay { color: #ffffff; }
+
+        .menu-icon {
+            font-size: 26px;
+            cursor: pointer;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .menu-icon span {
+            display: block;
+            width: 24px;
+            height: 3px;
+            background-color: white;
+            border-radius: 2px;
+        }
+
+        /* Card Layout */
+        .card {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 440px;
+            margin: 20px 0 30px;
+            padding: 30px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 75, 135, 0.08);
+            display: flex;
+            flex-direction: column;
+            border-top: 5px solid var(--ompay-blue-light);
+        }
+
+        .main-title {
+            font-size: 24px;
+            color: var(--text-main);
+            margin: 0 0 12px;
+            text-align: center;
+            font-weight: 800;
+            line-height: 1.25;
+        }
+
+        .subtext {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 28px;
+            line-height: 1.4;
+        }
+
+        /* Calculator Inner Area Container */
+        .calculator-container {
+            background: var(--calc-bg);
+            border-radius: 12px;
+            padding: 22px 18px 18px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .calculator-title {
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 17px;
+            margin-bottom: 22px;
+        }
+
+        .slider-section { 
+            margin-bottom: 22px; 
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #475569;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .accent-text { 
+            color: var(--ompay-primary); 
+            font-weight: 800; 
+            font-size: 15px;
+        }
+
+        /* Custom Range Input */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            margin: 10px 0;
+            background: transparent;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: var(--slider-track);
+            border-radius: 3px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 22px;
+            width: 22px;
+            border-radius: 50%;
+            background: var(--ompay-primary);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .slider-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* Monthly Payment Results */
+        .result-container {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .result-label {
+            font-size: 15px;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .result-amount {
+            color: var(--ompay-primary);
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .interest-rate-info {
+            text-align: center;
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 12px;
+        }
+
+        /* CTA Button */
+        .btn-apply {
+            background: var(--ompay-primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            margin-bottom: 28px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-apply:active {
+            background-color: var(--ompay-hover);
+        }
+
+        /* Features List Section */
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-top: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .feature-icon-svg {
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .feature-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .feature-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .feature-desc {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Bottom Footer Banner */
+        .footer-banner {
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #64748b;
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Header Navigation Bar -->
+<div class="app-header">
+    <div style="width: 24px;"></div>
+    <div class="header-title">
+        <span class="pay">OM</span><span class="om">PAY</span>
+    </div>
+    <div class="menu-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</div>
+
+<div class="card">
+    <h1 class="main-title">اححصل على قرضك<br>بكل سهولة وسرعة</h1>
+    <div class="subtext">موافقة سريعة • نسبة سوداء تنافسية • شروط ميسرة</div>
+
+    <!-- Inside Calculator Box -->
+    <div class="calculator-container">
+        <div class="calculator-title">حاسبة القرض</div>
+
+        <!-- Loan Amount Selector -->
+        <div class="slider-section">
+            <div class="slider-header">
+                <span>مبلغ القرض</span>
+                <span id="valAmt" class="accent-text">2,500 ر.ع.</span>
+            </div>
+            <input type="range" id="amt" min="500" max="50000" step="500" value="2500">
+            <div class="slider-footer">
+                <span>500 ر.ع.</span>
+                <span>50,000 ر.ع.</span>
+            </div>
+        </div>
+
+        <!-- Duration Selector -->
+        <div class="slider-section">
+            <div class="slider-header">
+                <span>مدة القرض</span>
+                <span id="valDur" class="accent-text">12 شهر</span>
+            </div>
+            <input type="range" id="dur" min="6" max="60" step="1" value="12">
+            <div class="slider-footer">
+                <span>6 أشهر</span>
+                <span>60 شهر</span>
+            </div>
+        </div>
+
+        <!-- Display Area -->
+        <div class="result-container">
+            <span class="result-label">القسط الشهري</span>
+            <span id="monthly" class="result-amount">218 ر.ع.</span>
+        </div>
+        
+        <div class="interest-rate-info">
+            معدل الفائدة السنوي : 5%
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button class="btn-apply" onclick="goToPage2()">تقديم طلب قرض</button>
+
+    <!-- Bottom Features -->
+    <div class="features-list">
+        <div class="feature-item">
+            <div class="feature-icon-svg">⚡</div>
+            <div class="feature-text">
+                <span class="feature-title">سريع</span>
+                <span class="feature-desc">رد خلال 24 ساعة</span>
+            </div>
+        </div>
+
+        <div class="feature-item">
+            <div class="feature-icon-svg">💰</div>
+            <div class="feature-text">
+                <span class="feature-title">فوائد منخفضة</span>
+                <span class="feature-desc">تبدأ من 5% سنوياً</span>
+            </div>
+        </div>
+
+        <div class="feature-item">
+            <div class="feature-icon-svg">🔒</div>
+            <div class="feature-text">
+                <span class="feature-title">آمن وموثوق</span>
+                <span class="feature-desc">حماية بمعايير مصرفية</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="footer-banner">
+    © 2026 OMPAY سلطنة عمان
+</div>
+
+<script>
+    let calculatedMonthly = 218;
+
+    function formatOMR(value) {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function update() {
+        const amtEl = document.getElementById('amt');
+        const durEl = document.getElementById('dur');
+
+        if (!amtEl || !durEl) return;
+
+        const principal = Number(amtEl.value) || 0;
+        const durationMonths = Number(durEl.value) || 1;
+
+        document.getElementById('valAmt').innerText = `${formatOMR(principal)} ر.ع.`;
+        document.getElementById('valDur').innerText = `${durationMonths} شهر`;
+
+        const annualRate = 0.05;
+        const totalInterest = principal * annualRate * (durationMonths / 12);
+        const totalAmount = principal + totalInterest;
+        calculatedMonthly = Math.round(totalAmount / durationMonths);
+
+        document.getElementById('monthly').innerText = `${formatOMR(calculatedMonthly)} ر.ع.`;
+    }
+
+    function goToPage2() {
+        const amtEl = document.getElementById('amt');
+        const durEl = document.getElementById('dur');
+
+        if (!amtEl || !durEl) return;
+
+        localStorage.setItem('amount', amtEl.value);
+        localStorage.setItem('loan_amount', amtEl.value);
+        
+        localStorage.setItem('loanDuration', durEl.value);
+        localStorage.setItem('loan_term', durEl.value);
+        localStorage.setItem('duration', durEl.value);
+
+        localStorage.setItem('monthly_repayment', calculatedMonthly);
+
+        window.location.href = "/page2";
+    }
+
+    window.onload = () => {
+        const tg = window.Telegram?.WebApp;
+
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
+
+        const amtEl = document.getElementById('amt');
+        const durEl = document.getElementById('dur');
+
+        if (amtEl) amtEl.addEventListener('input', update);
+        if (durEl) durEl.addEventListener('input', update);
+
+        update();
+    };
+</script>
+
+</body>
+  </html>
+  
